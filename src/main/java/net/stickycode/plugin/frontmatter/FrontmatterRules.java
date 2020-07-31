@@ -8,11 +8,11 @@ public class FrontmatterRules {
   }
 
   public CharSequence transform(String line) {
-    return null;
+    return line;
   }
 
   public boolean allow(String line) {
-    return false;
+    return true;
   }
 
 }

@@ -4,17 +4,20 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 
 public enum MarkdownProcessor {
+
   Pending {
+
     @Override
     MarkdownProcessor consume(String line, BufferedWriter writer, FrontmatterRules rules) throws IOException {
-      writer.append(line).append("\n");
-      if ("---".equals(line))
+      if ("---".equals(line)) {
+        writer.append(line).append("\n");
         return MarkdownProcessor.Frontmatter;
-
+      }
       return this;
     }
   },
   Frontmatter {
+
     @Override
     MarkdownProcessor consume(String line, BufferedWriter writer, FrontmatterRules rules) throws IOException {
       if ("---".equals(line)) {
