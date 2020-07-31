@@ -3,7 +3,9 @@ package net.stickycode.plugin.frontmatter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -23,46 +25,51 @@ public class UpdateFrontmatterMojo
   private LineSeparator lineSeparator = LineSeparator.defaultValue();
 
   /**
-   * List of files to include. Specified as fileset patterns which are relative to the input directory whose contents
-   * is being packaged into the JAR.
-   */
-  @Parameter
-  private String[] includes;
-
-  /**
-   * List of files to exclude. Specified as fileset patterns which are relative to the input directory whose contents
-   * is being packaged into the JAR.
-   */
-  @Parameter
-  private String[] excludes;
-
-  /**
    * Directory containing the Markdown files to update
    */
-  @Parameter(defaultValue = "${project.build.directory}/markdown", required = true)
-  private File baseDirectory;
+  @Parameter(defaultValue = "src/main/markdown", required = true)
+  private File sourceDirectory;
+
+  /**
+   * Where to write the updated Markdown files
+   */
+  @Parameter(defaultValue = "${project.build.directory}/markdown", required = false)
+  private File outputDirectory;
+
+  @Parameter(required = true)
+  private FrontmatterRules rules;
 
   @Override
   public void execute() throws MojoExecutionException, MojoFailureException {
-    if (!baseDirectory.isDirectory())
-      throw new MojoFailureException("base directory not found " + baseDirectory.toString());
+    if (!sourceDirectory.isDirectory())
+      throw new MojoFailureException("base directory not found " + sourceDirectory.toString());
 
-    if (!baseDirectory.canRead())
-      throw new MojoFailureException("base directory cannot be read" + baseDirectory.toString());
+    if (!sourceDirectory.canRead())
+      throw new MojoFailureException("base directory cannot be read" + sourceDirectory.toString());
 
     try {
-      processFrontmatter(baseDirectory);
+      processFrontmatter(sourceDirectory.toPath(), outputDirectory.toPath(), rules);
     }
     catch (Exception e) {
-      throw new MojoFailureException("Failed to process the markdown files in " + baseDirectory.toString(), e);
+      throw new MojoFailureException("Failed to process the markdown files in " + sourceDirectory.toString(), e);
     }
   }
 
-  List<FrontmatterUpdate> processFrontmatter(File directory) throws IOException {
-    MarkdownVisitor visitor = new MarkdownVisitor();
-    Files.walkFileTree(directory.toPath(), visitor);
-    return visitor.getUpdates();
+  List<FrontmatterUpdate> processFrontmatter(Path source, Path output, FrontmatterRules rules) throws IOException {
+    Files.createDirectories(output);
+
+    return Files.walk(source)
+      .filter(Files::isReadable)
+      .filter(Files::isRegularFile)
+      .filter(UpdateFrontmatterMojo::isMarkdown)
+      .map(m -> new FrontmatterUpdate(m, output))
+      .peek(u -> u.process(rules))
+      .collect(Collectors.toList());
+
   }
 
+  public static boolean isMarkdown(Path path) {
+    return String.valueOf(path).endsWith(".md");
+  }
 
 }

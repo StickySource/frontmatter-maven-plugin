@@ -14,18 +14,25 @@ public class UpdateFrontmatterMojoTest {
   public void empty() throws IOException {
     assertThat(frontMatter("empty")).hasSize(0);
   }
+
   @Test
   public void one() throws IOException {
     assertThat(frontMatter("one")).hasSize(1);
   }
+
   @Test
   public void many() throws IOException {
     assertThat(frontMatter("many")).hasSize(4);
   }
 
+  @Test
+  public void includes() throws IOException {
+    assertThat(frontMatter("examples")).hasSize(2);
+  }
+
   private List<FrontmatterUpdate> frontMatter(String directory) throws IOException {
     UpdateFrontmatterMojo mojo = new UpdateFrontmatterMojo();
-    return mojo.processFrontmatter(new File("src/test/resources",directory));
+    return mojo.processFrontmatter(new File("src/test/resources", directory).toPath(), new File("target", directory).toPath(), new FrontmatterRules());
   }
 
 }
