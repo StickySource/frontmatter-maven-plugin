@@ -8,6 +8,9 @@ import java.io.StringWriter;
 
 import org.junit.jupiter.api.Test;
 
+import net.stickycode.plugin.frontmatter.rules.AddFrontmatterRule;
+import net.stickycode.plugin.frontmatter.rules.DeleteFrontmatterRule;
+
 public class MarkdownProcessorTest {
 
   @Test
@@ -23,10 +26,31 @@ public class MarkdownProcessorTest {
     check(MarkdownProcessor.Frontmatter, "---", MarkdownProcessor.Body, "---\n");
   }
 
-  private void check(MarkdownProcessor start, String in, MarkdownProcessor end, String expected) throws IOException {
+  @Test
+  public void body() throws IOException {
+    check(MarkdownProcessor.Body, "content", MarkdownProcessor.Body, "content\n");
+    check(MarkdownProcessor.Body, "---", MarkdownProcessor.Body, "---\n");
+  }
+
+  @Test
+  public void delete() throws IOException {
+    check(MarkdownProcessor.Frontmatter, "date: 2020-07-31", MarkdownProcessor.Frontmatter, "", new DeleteFrontmatterRule("date"));
+    check(MarkdownProcessor.Frontmatter, "date: 2020-07-31", MarkdownProcessor.Frontmatter, "date: 2020-07-31\n", new DeleteFrontmatterRule("key"));
+  }
+
+  @Test
+  public void add() throws IOException {
+    check(MarkdownProcessor.Frontmatter, "date: 2020-07-31", MarkdownProcessor.Frontmatter, "date: 2020-07-31\n", new AddFrontmatterRule().setKey("key").setValue("value"));
+    check(MarkdownProcessor.Frontmatter, "---", MarkdownProcessor.Body, "key: value\n---\n", new AddFrontmatterRule().setKey("key").setValue("value"));
+  }
+
+  private void check(MarkdownProcessor start, String in, MarkdownProcessor end, String expected, FrontmatterRule... rule)
+      throws IOException {
+    FrontmatterRules rules = new FrontmatterRules();
+    rules.add(rule);
     StringWriter out = new StringWriter();
     try (BufferedWriter writer = new BufferedWriter(out);) {
-      assertThat(start.consume(in, writer, new FrontmatterRules())).isEqualTo(end);
+      assertThat(start.consume(in, writer, rules)).isEqualTo(end);
       writer.flush();
       assertThat(out.getBuffer().toString()).isEqualTo(expected);
     }

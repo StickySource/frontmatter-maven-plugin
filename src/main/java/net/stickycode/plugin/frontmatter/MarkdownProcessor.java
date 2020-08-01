@@ -27,7 +27,8 @@ public enum MarkdownProcessor {
       }
 
       if (rules.allow(line))
-        writer.append(rules.transform(line)).append("\n");
+        writer.append(line).append("\n");
+
       return this;
     }
   },
