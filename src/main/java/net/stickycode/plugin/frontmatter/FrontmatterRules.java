@@ -16,12 +16,11 @@ public class FrontmatterRules {
 
   public void applyAdditions(BufferedWriter writer) {
     for (FrontmatterRule rule : rules) {
-      rule.add(writer);
+      if (!keys.contains(rule.getKey())) {
+        rule.add(writer);
+        keys.add(rule.getKey());
+      }
     }
-  }
-
-  public CharSequence transform(String line) {
-    return line;
   }
 
   public boolean allow(String line) {

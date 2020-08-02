@@ -8,4 +8,6 @@ public interface FrontmatterRule {
 
   void add(BufferedWriter writer);
 
+  String getKey();
+
 }
