@@ -1,9 +1,7 @@
-package net.stickycode.plugin.frontmatter.rules;
+package net.stickycode.plugin.frontmatter;
 
 import java.io.BufferedWriter;
 import java.util.Objects;
-
-import net.stickycode.plugin.frontmatter.FrontmatterRule;
 
 public class DeleteFrontmatterRule
     implements FrontmatterRule {

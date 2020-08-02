@@ -37,7 +37,7 @@ public class UpdateFrontmatterMojo
   private File outputDirectory;
 
   @Parameter(required = true)
-  private FrontmatterRules rules;
+  private FrontmatterRule[] rules;
 
   @Override
   public void execute() throws MojoExecutionException, MojoFailureException {
@@ -48,7 +48,9 @@ public class UpdateFrontmatterMojo
       throw new MojoFailureException("base directory cannot be read" + sourceDirectory.toString());
 
     try {
-      processFrontmatter(sourceDirectory.toPath(), outputDirectory.toPath(), rules);
+      FrontmatterRules plan = new FrontmatterRules();
+      plan.add(rules);
+      processFrontmatter(sourceDirectory.toPath(), outputDirectory.toPath(), plan);
     }
     catch (Exception e) {
       throw new MojoFailureException("Failed to process the markdown files in " + sourceDirectory.toString(), e);

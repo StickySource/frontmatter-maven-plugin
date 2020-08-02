@@ -8,9 +8,6 @@ import java.io.StringWriter;
 
 import org.junit.jupiter.api.Test;
 
-import net.stickycode.plugin.frontmatter.rules.AddFrontmatterRule;
-import net.stickycode.plugin.frontmatter.rules.DeleteFrontmatterRule;
-
 public class MarkdownProcessorTest {
 
   @Test

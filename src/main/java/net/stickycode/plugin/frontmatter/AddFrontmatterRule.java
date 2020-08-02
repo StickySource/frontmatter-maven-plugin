@@ -1,9 +1,7 @@
-package net.stickycode.plugin.frontmatter.rules;
+package net.stickycode.plugin.frontmatter;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
-
-import net.stickycode.plugin.frontmatter.FrontmatterRule;
 
 public class AddFrontmatterRule
     implements FrontmatterRule {
