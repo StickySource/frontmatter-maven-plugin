@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>net.stickycode.plugins.it</groupId>
-  <artifactId>frontmatter-maven-plugin-delete</artifactId>
+  <artifactId>frontmatter-maven-plugin-addTwo</artifactId>
   <version>1.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
@@ -15,17 +15,23 @@
         <artifactId>@pom.artifactId@</artifactId>
         <version>@pom.version@</version>
         <executions>
+
           <execution>
-            <id>delete</id>
             <phase>process-resources</phase>
             <goals>
               <goal>update</goal>
             </goals>
             <configuration>
+              <outputDirectory>${project.build.directory}/addTwo</outputDirectory>
               <rules>
-                <deleteFrontmatterRule>
-                  <key>date</key>
-                </deleteFrontmatterRule>
+                <addFrontmatterRule>
+                  <key>some</key>
+                  <value>value</value>
+                </addFrontmatterRule>
+                <addFrontmatterRule>
+                  <key>another</key>
+                  <value>entry</value>
+                </addFrontmatterRule>
               </rules>
             </configuration>
           </execution>

@@ -36,7 +36,10 @@ public class UpdateFrontmatterMojo
   @Parameter(defaultValue = "${project.build.directory}/markdown", required = false)
   private File outputDirectory;
 
-  @Parameter(required = true)
+  /**
+   * The rules to filter/transform/edit the frontmatter
+   */
+  @Parameter(required = false)
   private FrontmatterRule[] rules;
 
   @Override
@@ -49,7 +52,8 @@ public class UpdateFrontmatterMojo
 
     try {
       FrontmatterRules plan = new FrontmatterRules();
-      plan.add(rules);
+      if (rules != null)
+        plan.add(rules);
       processFrontmatter(sourceDirectory.toPath(), outputDirectory.toPath(), plan);
     }
     catch (Exception e) {

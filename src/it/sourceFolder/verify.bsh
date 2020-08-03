@@ -1,7 +1,7 @@
 import java.io.File;
 import org.codehaus.plexus.util.FileUtils;
 
-File markdownFile = new File( basedir, "target/markdown/date.md" );
+File markdownFile = new File( basedir, "target/markdown/other.md" );
 System.out.println( "Checking for existence of first test file: " + markdownFile );
 if (!markdownFile.exists())
   throw new RuntimeException(markdownFile.toString() + " not found" );
@@ -9,9 +9,10 @@ if (!markdownFile.exists())
 String markdown = FileUtils.fileRead( markdownFile, "UTF-8" ).trim();
 
 String expected = "---\n"
++ "date: 2020-07-31\n"
 + "---\n"
 + "\n"
-+ "some content here\n"
++ "alternate source folder contents\n"
 + "EOF";
 
 if (markdown.equals(expected)) {
