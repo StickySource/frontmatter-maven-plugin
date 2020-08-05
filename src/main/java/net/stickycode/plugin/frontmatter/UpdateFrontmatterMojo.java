@@ -68,7 +68,7 @@ public class UpdateFrontmatterMojo
       .filter(Files::isReadable)
       .filter(Files::isRegularFile)
       .filter(UpdateFrontmatterMojo::isMarkdown)
-      .map(m -> new FrontmatterUpdate(m, output))
+      .map(m -> new FrontmatterUpdate(m, output.resolve(source.relativize(m))))
       .peek(u -> u.process(rules))
       .collect(Collectors.toList());
 

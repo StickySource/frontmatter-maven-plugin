@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (c) 2012 RedEngine Ltd, http://www.redengine.co.nz. All rights reserved. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>net.stickycode.plugins.it</groupId>
+  <artifactId>frontmatter-maven-plugin-source</artifactId>
+  <version>1.1-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>@pom.groupId@</groupId>
+        <artifactId>@pom.artifactId@</artifactId>
+        <version>@pom.version@</version>
+        <executions>
+
+          <execution>
+            <id>sourceFolder</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>update</goal>
+            </goals>
+            <configuration>
+              <sourceDirectory>src/main/different</sourceDirectory>
+              <outputDirectory>src/main/different</outputDirectory>
+              <rules>
+                <addFrontmatterRule>
+                  <key>new</key>
+                  <value>one</value>
+                </addFrontmatterRule>
+              </rules>
+            </configuration>
+          </execution>
+
+        </executions>
+      </plugin>
+
+    </plugins>
+  </build>
+</project>

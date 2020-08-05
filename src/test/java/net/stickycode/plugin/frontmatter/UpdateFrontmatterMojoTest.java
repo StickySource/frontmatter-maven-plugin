@@ -52,14 +52,25 @@ public class UpdateFrontmatterMojoTest {
 
   @Test
   public void twoAddsDoesJustOne() throws IOException {
-    assertThat(frontMatter("examples", new AddFrontmatterRule().setKey("key").setValue("other"),new AddFrontmatterRule().setKey("key").setValue("value"))).hasSize(2);
+    assertThat(frontMatter("examples", new AddFrontmatterRule().setKey("key").setValue("other"),
+      new AddFrontmatterRule().setKey("key").setValue("value"))).hasSize(2);
     check("date.md", "---", "date: 2020-07-31", "key: other", "---", "", "some content here", "EOF");
   }
 
   @Test
   public void noadd() throws IOException {
-    assertThat(frontMatter("examples",new AddFrontmatterRule().setKey("date").setValue("other"))).hasSize(2);
+    assertThat(frontMatter("examples", new AddFrontmatterRule().setKey("date").setValue("other"))).hasSize(2);
     check("date.md", "---", "date: 2020-07-31", "---", "", "some content here", "EOF");
+  }
+
+  @Test
+  public void inplace() throws IOException {
+    assertThat(frontMatter("examples")).hasSize(2);
+    check("date.md", "---", "date: 2020-07-31", "---", "", "some content here", "EOF");
+    assertThat(inplace(new AddFrontmatterRule().setKey("key").setValue("value"))).hasSize(2);
+    check("date.md", "---", "date: 2020-07-31", "key: value", "---", "", "some content here", "EOF");
+    assertThat(inplace(new AddFrontmatterRule().setKey("two").setValue("three"), new DeleteFrontmatterRule("date"))).hasSize(2);
+    check("date.md", "---", "key: value", "two: three", "---", "", "some content here", "EOF");
   }
 
   private void check(String resultName, String... expectation) throws IOException {
@@ -79,6 +90,16 @@ public class UpdateFrontmatterMojoTest {
     rules.add(frontmatterRules);
     return mojo.processFrontmatter(
       Paths.get("src/test/resources", directory),
+      Paths.get("target", Thread.currentThread().getStackTrace()[2].getMethodName()),
+      rules);
+  }
+
+  private List<FrontmatterUpdate> inplace(FrontmatterRule... frontmatterRules) throws IOException {
+    UpdateFrontmatterMojo mojo = new UpdateFrontmatterMojo();
+    FrontmatterRules rules = new FrontmatterRules();
+    rules.add(frontmatterRules);
+    return mojo.processFrontmatter(
+      Paths.get("target", Thread.currentThread().getStackTrace()[2].getMethodName()),
       Paths.get("target", Thread.currentThread().getStackTrace()[2].getMethodName()),
       rules);
   }
