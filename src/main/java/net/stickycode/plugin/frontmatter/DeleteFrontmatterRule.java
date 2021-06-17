@@ -33,4 +33,9 @@ public class DeleteFrontmatterRule
     this.key = key;
   }
 
+  @Override
+  public String toString() {
+    return "Delete " + key;
+  }
+
 }

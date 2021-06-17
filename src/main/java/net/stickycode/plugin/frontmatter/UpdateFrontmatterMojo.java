@@ -54,7 +54,9 @@ public class UpdateFrontmatterMojo
       FrontmatterRules plan = new FrontmatterRules();
       if (rules != null)
         plan.add(rules);
-      processFrontmatter(sourceDirectory.toPath(), outputDirectory.toPath(), plan);
+
+      List<FrontmatterUpdate> updates = processFrontmatter(sourceDirectory.toPath(), outputDirectory.toPath(), plan);
+      getLog().info("processed " + updates.size() + " file(s)");
     }
     catch (Exception e) {
       throw new MojoFailureException("Failed to process the markdown files in " + sourceDirectory.toString(), e);
@@ -62,14 +64,23 @@ public class UpdateFrontmatterMojo
   }
 
   List<FrontmatterUpdate> processFrontmatter(Path source, Path output, FrontmatterRules rules) throws IOException {
+    if (source.equals(output))
+      getLog().info("Apply " + rules + " to markdown in " + source);
+    else
+      getLog().info("Apply " + rules + " when copying from " + source + " to " + output);
+
     Files.createDirectories(output);
 
     return Files.walk(source)
       .filter(Files::isReadable)
       .filter(Files::isRegularFile)
       .filter(UpdateFrontmatterMojo::isMarkdown)
+      .map(f -> {
+        getLog().debug("processing " + f.toString());
+        return f;
+      })
       .map(m -> new FrontmatterUpdate(m, output.resolve(source.relativize(m))))
-      .peek(u -> u.process(rules))
+      .peek(u -> u.process(new FrontmatterRulesExecution(rules)))
       .collect(Collectors.toList());
 
   }

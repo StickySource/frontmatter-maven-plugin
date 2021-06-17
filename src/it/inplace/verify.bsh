@@ -9,8 +9,8 @@ if (!markdownFile.exists())
 String markdown = FileUtils.fileRead( markdownFile, "UTF-8" ).trim();
 
 String expected = "---\n"
-+ "date: 2020-07-31\n"
 + "new: one\n"
++ "date: 2020-07-31\n"
 + "---\n"
 + "\n"
 + "alternate source folder contents\n"

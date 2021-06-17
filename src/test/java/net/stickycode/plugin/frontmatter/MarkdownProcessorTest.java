@@ -36,18 +36,28 @@ public class MarkdownProcessorTest {
   }
 
   @Test
-  public void add() throws IOException {
+  public void addHappensAtBeginningOfFrontMatter() throws IOException {
+    check(MarkdownProcessor.Pending, "---", MarkdownProcessor.Frontmatter, "---\nkey: value\n", new AddFrontmatterRule().setKey("key").setValue("value"));
+  }
+
+  @Test
+  public void addDoesntHappenInFrontMatter() throws IOException {
     check(MarkdownProcessor.Frontmatter, "date: 2020-07-31", MarkdownProcessor.Frontmatter, "date: 2020-07-31\n", new AddFrontmatterRule().setKey("key").setValue("value"));
-    check(MarkdownProcessor.Frontmatter, "---", MarkdownProcessor.Body, "key: value\n---\n", new AddFrontmatterRule().setKey("key").setValue("value"));
+  }
+
+  @Test
+  public void addDoesntHappenAtEndOfFrontMatter() throws IOException {
+    check(MarkdownProcessor.Frontmatter, "---", MarkdownProcessor.Body, "---\n", new AddFrontmatterRule().setKey("key").setValue("value"));
   }
 
   private void check(MarkdownProcessor start, String in, MarkdownProcessor end, String expected, FrontmatterRule... rule)
       throws IOException {
     FrontmatterRules rules = new FrontmatterRules();
     rules.add(rule);
+    FrontmatterRulesExecution run = new FrontmatterRulesExecution(rules);
     StringWriter out = new StringWriter();
     try (BufferedWriter writer = new BufferedWriter(out);) {
-      assertThat(start.consume(in, writer, rules)).isEqualTo(end);
+      assertThat(start.consume(in, writer, run)).isEqualTo(end);
       writer.flush();
       assertThat(out.getBuffer().toString()).isEqualTo(expected);
     }

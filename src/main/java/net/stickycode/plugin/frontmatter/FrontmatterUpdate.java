@@ -35,7 +35,7 @@ public class FrontmatterUpdate {
     }
   }
 
-  public void process(FrontmatterRules rules) {
+  public void process(FrontmatterRulesExecution rules) {
     try {
       Files.createDirectories(target.getParent()); // nested files need parents
       try (BufferedReader reader = Files.newBufferedReader(source);) {
