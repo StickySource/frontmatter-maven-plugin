@@ -9,10 +9,12 @@ public class FrontmatterRules
 
   private List<FrontmatterRule> rules = new ArrayList<>();
 
-  public void add(FrontmatterRule... rules) {
+  public void add(FrontmatterRule... rules) throws ThereCanOnlyBeOneAddRuleForEachKeyException {
     for (FrontmatterRule rule : rules) {
-      if (!this.rules.contains(rule))
-        this.rules.add(rule);
+      if (this.rules.contains(rule))
+        throw new ThereCanOnlyBeOneAddRuleForEachKeyException(rule);
+
+      this.rules.add(rule);
     }
   }
 

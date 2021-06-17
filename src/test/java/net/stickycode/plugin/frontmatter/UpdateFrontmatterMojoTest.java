@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class UpdateFrontmatterMojoTest {
@@ -77,10 +78,10 @@ public class UpdateFrontmatterMojoTest {
 
   @Test
   public void duplicateAddsDoesJustOne() throws IOException {
-    assertThat(frontMatter("examples", new AddFrontmatterRule().setKey("key").setValue("other"),
-      new AddFrontmatterRule().setKey("key").setValue("value"))).hasSize(2);
-    check("date.md", "---", "key: other", "date: 2020-07-31","---", "", "some content here", "EOF");
-    check("nothing.md", "---", "key: other", "---", "", "some content here", "EOF");
+    Assertions.assertThrows(ThereCanOnlyBeOneAddRuleForEachKeyException.class, () -> {
+      frontMatter("examples", new AddFrontmatterRule().setKey("key").setValue("other"),
+        new AddFrontmatterRule().setKey("key").setValue("value"));
+    });
   }
 
   @Test
@@ -96,7 +97,7 @@ public class UpdateFrontmatterMojoTest {
     assertThat(frontMatter("examples", new AddFrontmatterRule().setKey("key").setValue("other"),
       new AddFrontmatterRule().setKey("key3").setValue("other"),
       new AddFrontmatterRule().setKey("key2").setValue("value"))).hasSize(2);
-    check("date.md", "---",  "key: other", "key3: other", "key2: value","date: 2020-07-31", "---", "", "some content here", "EOF");
+    check("date.md", "---", "key: other", "key3: other", "key2: value", "date: 2020-07-31", "---", "", "some content here", "EOF");
     check("nothing.md", "---", "key: other", "key3: other", "key2: value", "---", "", "some content here", "EOF");
   }
 
