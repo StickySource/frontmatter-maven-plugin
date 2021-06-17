@@ -36,6 +36,31 @@ public class UpdateFrontmatterMojoTest {
   public void delete() throws IOException {
     assertThat(frontMatter("examples", new DeleteFrontmatterRule("date"))).hasSize(2);
     check("date.md", "---", "---", "", "some content here", "EOF");
+    check("nothing.md", "---", "---", "", "some content here", "EOF");
+  }
+
+  @Test
+  public void number() throws IOException {
+    assertThat(frontMatter("regression", new AddFrontmatterRule().setKey("key").setValue("value"))).hasSize(1);
+    check("number.md", "---",
+      "key: value",
+      "repository: \"Example/documentation-template\"",
+      "title: \"IXX. TLDR for experts\"",
+      "weight: 19",
+      "draft: true", "---", "", "and some text here");
+  }
+
+  @Test
+  public void numberWithReplace() throws IOException {
+    assertThat(frontMatter("regression", new AddFrontmatterRule().setKey("repository").setValue("\"team/name\""))).hasSize(1);
+    check("number.md", "---",
+      "repository: \"team/name\"",
+      "title: \"IXX. TLDR for experts\"",
+      "weight: 19",
+      "draft: true",
+      "---",
+      "",
+      "and some text here");
   }
 
   @Test
@@ -47,20 +72,38 @@ public class UpdateFrontmatterMojoTest {
   @Test
   public void add() throws IOException {
     assertThat(frontMatter("examples", new AddFrontmatterRule().setKey("key").setValue("value"))).hasSize(2);
-    check("date.md", "---", "date: 2020-07-31", "key: value", "---", "", "some content here", "EOF");
+    check("date.md", "---", "key: value", "date: 2020-07-31", "---", "", "some content here", "EOF");
   }
 
   @Test
-  public void twoAddsDoesJustOne() throws IOException {
+  public void duplicateAddsDoesJustOne() throws IOException {
     assertThat(frontMatter("examples", new AddFrontmatterRule().setKey("key").setValue("other"),
       new AddFrontmatterRule().setKey("key").setValue("value"))).hasSize(2);
-    check("date.md", "---", "date: 2020-07-31", "key: other", "---", "", "some content here", "EOF");
+    check("date.md", "---", "key: other", "date: 2020-07-31","---", "", "some content here", "EOF");
+    check("nothing.md", "---", "key: other", "---", "", "some content here", "EOF");
+  }
+
+  @Test
+  public void twoAdds() throws IOException {
+    assertThat(frontMatter("examples", new AddFrontmatterRule().setKey("key").setValue("other"),
+      new AddFrontmatterRule().setKey("key2").setValue("value"))).hasSize(2);
+    check("date.md", "---", "key: other", "key2: value", "date: 2020-07-31", "---", "", "some content here", "EOF");
+    check("nothing.md", "---", "key: other", "key2: value", "---", "", "some content here", "EOF");
+  }
+
+  @Test
+  public void threeAdds() throws IOException {
+    assertThat(frontMatter("examples", new AddFrontmatterRule().setKey("key").setValue("other"),
+      new AddFrontmatterRule().setKey("key3").setValue("other"),
+      new AddFrontmatterRule().setKey("key2").setValue("value"))).hasSize(2);
+    check("date.md", "---",  "key: other", "key3: other", "key2: value","date: 2020-07-31", "---", "", "some content here", "EOF");
+    check("nothing.md", "---", "key: other", "key3: other", "key2: value", "---", "", "some content here", "EOF");
   }
 
   @Test
   public void noadd() throws IOException {
     assertThat(frontMatter("examples", new AddFrontmatterRule().setKey("date").setValue("other"))).hasSize(2);
-    check("date.md", "---", "date: 2020-07-31", "---", "", "some content here", "EOF");
+    check("date.md", "---", "date: other", "---", "", "some content here", "EOF");
   }
 
   @Test
@@ -68,9 +111,9 @@ public class UpdateFrontmatterMojoTest {
     assertThat(frontMatter("examples")).hasSize(2);
     check("date.md", "---", "date: 2020-07-31", "---", "", "some content here", "EOF");
     assertThat(inplace(new AddFrontmatterRule().setKey("key").setValue("value"))).hasSize(2);
-    check("date.md", "---", "date: 2020-07-31", "key: value", "---", "", "some content here", "EOF");
+    check("date.md", "---", "key: value", "date: 2020-07-31", "---", "", "some content here", "EOF");
     assertThat(inplace(new AddFrontmatterRule().setKey("two").setValue("three"), new DeleteFrontmatterRule("date"))).hasSize(2);
-    check("date.md", "---", "key: value", "two: three", "---", "", "some content here", "EOF");
+    check("date.md", "---", "two: three", "key: value", "---", "", "some content here", "EOF");
   }
 
   private void check(String resultName, String... expectation) throws IOException {

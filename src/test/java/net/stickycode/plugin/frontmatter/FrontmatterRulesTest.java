@@ -14,18 +14,20 @@ public class FrontmatterRulesTest {
   public void deleteBlockesMatchingFrontmatter() {
     FrontmatterRules rules = new FrontmatterRules();
     rules.add(new DeleteFrontmatterRule("date"));
-    assertThat(rules.allow("field: asdfalkjaf")).isTrue();
-    assertThat(rules.allow("date:")).isTrue();
-    assertThat(rules.allow("date: 2020-07-10")).isFalse();
+    FrontmatterRulesExecution run = new FrontmatterRulesExecution(rules);
+    assertThat(run.allow("field: asdfalkjaf")).isTrue();
+    assertThat(run.allow("date:")).isTrue();
+    assertThat(run.allow("date: 2020-07-10")).isFalse();
   }
 
   @Test
   public void addAlwaysAllows() {
     FrontmatterRules rules = new FrontmatterRules();
     rules.add(new AddFrontmatterRule().setKey("date").setValue("2020-07-03"));
-    assertThat(rules.allow("field: asdfalkjaf")).isTrue();
-    assertThat(rules.allow("date:")).isTrue();
-    assertThat(rules.allow("date: 2020-07-10")).isTrue();
+    FrontmatterRulesExecution run = new FrontmatterRulesExecution(rules);
+    assertThat(run.allow("field: asdfalkjaf")).isTrue();
+    assertThat(run.allow("date:")).isTrue();
+    assertThat(run.allow("date: 2020-07-10")).isTrue();
   }
 
   @Test
@@ -44,9 +46,10 @@ public class FrontmatterRulesTest {
   private void check(String expected, FrontmatterRule... rule) throws IOException {
     FrontmatterRules rules = new FrontmatterRules();
     rules.add(rule);
+    FrontmatterRulesExecution run = new FrontmatterRulesExecution(rules);
     StringWriter out = new StringWriter();
     try (BufferedWriter writer = new BufferedWriter(out);) {
-      rules.applyAdditions(writer);
+      run.applyAdditions(writer);
       writer.flush();
       assertThat(out.getBuffer().toString()).isEqualTo(expected);
     }

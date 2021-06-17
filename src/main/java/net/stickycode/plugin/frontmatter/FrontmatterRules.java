@@ -1,53 +1,31 @@
 package net.stickycode.plugin.frontmatter;
 
-import java.io.BufferedWriter;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-public class FrontmatterRules {
-
-  private Pattern frontmatterParser = Pattern.compile("([a-zA-Z][a-zA-z0-9]*): .*");
+public class FrontmatterRules
+    implements Iterable<FrontmatterRule> {
 
   private List<FrontmatterRule> rules = new ArrayList<>();
-
-  private List<String> keys = new ArrayList<>();
-
-  public void applyAdditions(BufferedWriter writer) {
-    for (FrontmatterRule rule : rules) {
-      if (!keys.contains(rule.getKey())) {
-        rule.add(writer);
-        keys.add(rule.getKey());
-      }
-    }
-  }
-
-  public boolean allow(String line) {
-    Matcher matcher = frontmatterParser.matcher(line);
-    if (!matcher.matches())
-      return true;
-
-    String key = matcher.group(1);
-    if (keys.contains(key))
-      return false;
-
-    keys.add(key);
-    for (FrontmatterRule rule : rules)
-      if (!rule.allow(key))
-        return false;
-
-    return true;
-  }
-
-  String parseFrontmatterKey(String line) {
-    return line;
-  }
 
   public void add(FrontmatterRule... rules) {
     for (FrontmatterRule rule : rules) {
       this.rules.add(rule);
     }
+  }
+
+  @Override
+  public String toString() {
+    if (rules.isEmpty())
+      return "no rules";
+
+    return rules.toString();
+  }
+
+  @Override
+  public Iterator<FrontmatterRule> iterator() {
+    return rules.iterator();
   }
 
 }

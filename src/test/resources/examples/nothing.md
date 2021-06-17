@@ -2,3 +2,4 @@
 ---
 
 some content here
+EOF

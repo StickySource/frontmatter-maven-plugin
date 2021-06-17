@@ -80,7 +80,7 @@ public class UpdateFrontmatterMojo
         return f;
       })
       .map(m -> new FrontmatterUpdate(m, output.resolve(source.relativize(m))))
-      .peek(u -> u.process(rules))
+      .peek(u -> u.process(new FrontmatterRulesExecution(rules)))
       .collect(Collectors.toList());
 
   }

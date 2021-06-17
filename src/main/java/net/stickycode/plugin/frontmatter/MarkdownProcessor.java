@@ -8,9 +8,10 @@ public enum MarkdownProcessor {
   Pending {
 
     @Override
-    MarkdownProcessor consume(String line, BufferedWriter writer, FrontmatterRules rules) throws IOException {
+    MarkdownProcessor consume(String line, BufferedWriter writer, FrontmatterRulesExecution rules) throws IOException {
       if ("---".equals(line)) {
         writer.append(line).append("\n");
+        rules.applyAdditions(writer);
         return MarkdownProcessor.Frontmatter;
       }
       return this;
@@ -19,9 +20,8 @@ public enum MarkdownProcessor {
   Frontmatter {
 
     @Override
-    MarkdownProcessor consume(String line, BufferedWriter writer, FrontmatterRules rules) throws IOException {
+    MarkdownProcessor consume(String line, BufferedWriter writer, FrontmatterRulesExecution rules) throws IOException {
       if ("---".equals(line)) {
-        rules.applyAdditions(writer);
         writer.append(line).append("\n");
         return MarkdownProcessor.Body;
       }
@@ -34,7 +34,7 @@ public enum MarkdownProcessor {
   },
   Body;
 
-  MarkdownProcessor consume(String line, BufferedWriter writer, FrontmatterRules rules) throws IOException {
+  MarkdownProcessor consume(String line, BufferedWriter writer, FrontmatterRulesExecution rules) throws IOException {
     writer.append(line).append("\n");
     return this;
   }
