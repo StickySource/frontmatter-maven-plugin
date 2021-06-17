@@ -11,7 +11,8 @@ public class FrontmatterRules
 
   public void add(FrontmatterRule... rules) {
     for (FrontmatterRule rule : rules) {
-      this.rules.add(rule);
+      if (!this.rules.contains(rule))
+        this.rules.add(rule);
     }
   }
 
