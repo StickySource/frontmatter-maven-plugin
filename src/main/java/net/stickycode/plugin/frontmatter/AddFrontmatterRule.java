@@ -46,4 +46,9 @@ public class AddFrontmatterRule
     return this;
   }
 
+  @Override
+  public String toString() {
+    return "Add " + key + ":" + value;
+  }
+
 }
