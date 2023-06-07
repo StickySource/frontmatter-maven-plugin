@@ -9,7 +9,7 @@
 
   <groupId>net.stickycode.plugins</groupId>
   <artifactId>frontmatter-maven-plugin</artifactId>
-  <version>1.4-SNAPSHOT</version>
+  <version>1.4</version>
   <packaging>maven-plugin</packaging>
 
   <name>${project.artifactId}</name>
@@ -20,7 +20,7 @@
   <scm>
     <connection>${git.url}</connection>
     <developerConnection>${git.url}</developerConnection>
-    <tag>HEAD</tag>
+    <tag>frontmatter-maven-plugin-1.4</tag>
   </scm>
 
   <prerequisites>
